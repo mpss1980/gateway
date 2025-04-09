@@ -3,8 +3,9 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"github.com/mpss1980/gateway/go-gateway/internal/domain"
 	"time"
+
+	"github.com/mpss1980/gateway/go-gateway/internal/domain"
 )
 
 type AccountRepository struct {
@@ -109,7 +110,7 @@ func (r *AccountRepository) UpdateBalance(account *domain.Account) error {
 	err = tx.QueryRow(`SELECT balance FROM accounts WHERE id = $1 FOR UPDATE `,
 		account.ID).Scan(&currentBalance)
 
-	if !errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, sql.ErrNoRows) {
 		return domain.ErrAccountNotFound
 	}
 	if err != nil {

@@ -5,6 +5,8 @@ import (
 
 	"encoding/json"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/mpss1980/gateway/go-gateway/internal/domain"
 	"github.com/mpss1980/gateway/go-gateway/internal/dto"
 	"github.com/mpss1980/gateway/go-gateway/internal/service"
 )
@@ -20,12 +22,10 @@ func NewInvoiceHandler(service *service.InvoiceService) *InvoiceHandler {
 }
 
 // Create handles the creation of a new invoice
-//
-//lint:ignore SA1019 ignoring warning for demonstration purposes
 func (h *InvoiceHandler) Create(w http.ResponseWriter, r *http.Request) {
-	apiKey := r.Header.Get("APIKey")
+	apiKey := r.Header.Get("X-API_KEY")
 	if apiKey == "" {
-		http.Error(w, "APIKey is required", http.StatusBadRequest)
+		http.Error(w, "X-API_KEY is required", http.StatusBadRequest)
 		return
 	}
 
@@ -46,6 +46,67 @@ func (h *InvoiceHandler) Create(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(output)
+}
+
+// GetByID handles retrieving an invoice by ID
+func (h *InvoiceHandler) GetByID(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		http.Error(w, "ID is required", http.StatusBadRequest)
+		return
+	}
+	apiKey := r.Header.Get("X-API_KEY")
+	if apiKey == "" {
+		http.Error(w, "X-API_KEY is required", http.StatusBadRequest)
+		return
+	}
+
+	output, err := h.service.GetById(id, apiKey)
+	if err != nil {
+		switch err {
+		case domain.ErrInvoiceNotFound:
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		case domain.ErrUnauthorizedAccess:
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		case domain.ErrAccountNotFound:
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		default:
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(output)
+}
+
+// ListByAccount handles listing invoices by account ID
+func (h *InvoiceHandler) ListByAccount(w http.ResponseWriter, r *http.Request) {
+	apiKey := r.Header.Get("X-API_KEY")
+	if apiKey == "" {
+		http.Error(w, "X-API_KEY is required", http.StatusBadRequest)
+		return
+	}
+
+	outputs, err := h.service.ListByAccountAPIKey(apiKey)
+	if err != nil {
+		switch err {
+		case domain.ErrUnauthorizedAccess:
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		default:
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(outputs)
 }
 
 // ... additional handler methods can be added here ...

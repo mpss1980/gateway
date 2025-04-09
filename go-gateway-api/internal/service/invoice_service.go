@@ -36,7 +36,7 @@ func (s *InvoiceService) Create(input dto.CreateInvoiceInput) (*dto.InvoiceOutpu
 
 	// Update balance if status is approved
 	if invoice.Status == domain.StatusApproved {
-		_, err = s.accountService.UpdateBalance(accountOutput.ID, invoice.Amount)
+		_, err = s.accountService.UpdateBalance(input.APIKey, invoice.Amount)
 		if err != nil {
 			return nil, err
 		}

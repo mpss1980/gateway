@@ -3,13 +3,14 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"os"
+
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq" // PostgresSQL driver
 	"github.com/mpss1980/gateway/go-gateway/internal/repository"
 	"github.com/mpss1980/gateway/go-gateway/internal/service"
 	"github.com/mpss1980/gateway/go-gateway/internal/web/server"
-	"log"
-	"os"
 )
 
 func main() {
@@ -37,8 +38,11 @@ func main() {
 	accountRepository := repository.NewAccountRepository(db)
 	accountService := service.NewAccountService(accountRepository)
 
+	invoiceRepository := repository.NewInvoiceRepository(db)
+	invoiceService := service.NewInvoiceService(invoiceRepository, *accountService)
+
 	port := getEnv("PORT", "8080")
-	srv := server.NewServer(accountService, port)
+	srv := server.NewServer(accountService, invoiceService, port)
 	srv.ConfigureRoutes()
 
 	if err := srv.Start(); err != nil {

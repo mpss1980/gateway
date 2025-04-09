@@ -2,9 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/mpss1980/gateway/go-gateway/internal/dto"
 	"github.com/mpss1980/gateway/go-gateway/internal/service"
-	"net/http"
 )
 
 type AccountHandler struct {
@@ -37,9 +38,9 @@ func (h *AccountHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AccountHandler) Get(w http.ResponseWriter, r *http.Request) {
-	apiKey := r.Header.Get("X-API-Key")
+	apiKey := r.Header.Get("X-API_KEY")
 	if apiKey == "" {
-		http.Error(w, "API Key is required", http.StatusBadRequest)
+		http.Error(w, "X-API_KEY is required", http.StatusBadRequest)
 		return
 	}
 

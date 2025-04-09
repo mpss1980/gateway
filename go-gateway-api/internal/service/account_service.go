@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+
 	"github.com/mpss1980/gateway/go-gateway/internal/domain"
 	"github.com/mpss1980/gateway/go-gateway/internal/dto"
 )

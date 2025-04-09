@@ -104,13 +104,13 @@ func (r *InvoiceRepository) FindByAccountID(accountID string) ([]*domain.Invoice
 	return invoices, nil
 }
 
-// UpdateStatus updates the status and updated_at timestamp of an invoice
-func (r *InvoiceRepository) UpdateStatus(invoice *domain.Invoice) error {
+// UpdateStatus updates the status of an invoice
+func (r *InvoiceRepository) UpdateStatus(id string, status domain.Status) error {
 	result, err := r.db.Exec(`
 		UPDATE invoices
-		SET status = $1, updated_at = $2
-		WHERE id = $3
-	`, invoice.Status, invoice.UpdatedAt, invoice.ID)
+		SET status = $1, updated_at = NOW()
+		WHERE id = $2
+	`, status, id)
 	if err != nil {
 		return err
 	}
@@ -119,8 +119,9 @@ func (r *InvoiceRepository) UpdateStatus(invoice *domain.Invoice) error {
 	if err != nil {
 		return err
 	}
+
 	if rowsAffected == 0 {
-		return domain.ErrInvoiceNotFound // No rows updated means invoice wasn't found
+		return domain.ErrInvoiceNotFound
 	}
 
 	return nil
