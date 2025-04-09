@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"time"
 
 	"github.com/mpss1980/gateway/go-gateway/internal/domain"
 )
@@ -105,13 +104,13 @@ func (r *InvoiceRepository) FindByAccountID(accountID string) ([]*domain.Invoice
 	return invoices, nil
 }
 
-// UpdateStatus updates the status and updated_at timestamp of an invoice by ID
-func (r *InvoiceRepository) UpdateStatus(id string, status domain.Status) error {
+// UpdateStatus updates the status and updated_at timestamp of an invoice
+func (r *InvoiceRepository) UpdateStatus(invoice *domain.Invoice) error {
 	result, err := r.db.Exec(`
 		UPDATE invoices
 		SET status = $1, updated_at = $2
 		WHERE id = $3
-	`, status, time.Now(), id)
+	`, invoice.Status, invoice.UpdatedAt, invoice.ID)
 	if err != nil {
 		return err
 	}

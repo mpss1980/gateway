@@ -77,8 +77,6 @@ func (i *Invoice) Process() error {
 		i.Status = StatusRejected
 	}
 
-	i.UpdatedAt = time.Now()
-
 	return nil
 }
 
@@ -87,8 +85,6 @@ func (i *Invoice) UpdateStatus(newStatus Status) error {
 	if i.Status == StatusPending {
 		return ErrInvalidStatus // Cannot update status if it's still pending
 	}
-
-	// Optional: Add validation for newStatus if needed (e.g., check if it's a valid known status)
 
 	i.Status = newStatus
 	i.UpdatedAt = time.Now()

@@ -13,5 +13,4 @@ type InvoiceRepository interface {
 	FindByID(id string) (*Invoice, error)
 	FindByAccountID(accountID string) ([]*Invoice, error)
 	UpdateStatus(id string, status Status) error
-	// Add other necessary methods like FindByAccountID, List, etc.
 }
