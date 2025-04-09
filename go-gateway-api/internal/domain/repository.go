@@ -6,3 +6,12 @@ type AccountRepository interface {
 	FindByID(id string) (*Account, error)
 	UpdateBalance(account *Account) error
 }
+
+// InvoiceRepository defines the interface for invoice persistence
+type InvoiceRepository interface {
+	Save(invoice *Invoice) error
+	FindByID(id string) (*Invoice, error)
+	FindByAccountID(accountID string) ([]*Invoice, error)
+	UpdateStatus(id string, status Status) error
+	// Add other necessary methods like FindByAccountID, List, etc.
+}
