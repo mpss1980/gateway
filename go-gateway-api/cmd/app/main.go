@@ -41,7 +41,7 @@ func main() {
 	invoiceRepository := repository.NewInvoiceRepository(db)
 	invoiceService := service.NewInvoiceService(invoiceRepository, *accountService)
 
-	port := getEnv("PORT", "8080")
+	port := getEnv("HTTP_PORT", "8081")
 	srv := server.NewServer(accountService, invoiceService, port)
 	srv.ConfigureRoutes()
 
