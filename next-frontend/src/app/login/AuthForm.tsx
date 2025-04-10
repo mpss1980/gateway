@@ -1,11 +1,35 @@
+
 import { InfoIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
+export async function loginAction(formData: FormData) {
+  "use server";
+  const apiKey = formData.get("apiKey");
+
+  const response = await fetch("http://localhost:8081/accounts", {
+    headers: {
+      "X-API-KEY": apiKey as string,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Invalid API Key");
+  }
+
+  const cookiesStore = await cookies();
+  cookiesStore.set("apiKey", apiKey as string);
+
+  redirect("/invoices");
+}
 
 export function AuthForm() {
+  
   return (
-    <form className="space-y-4">
+    <form className="space-y-4" action={loginAction}>
       <div className="space-y-2">
         <label htmlFor="apiKey" className="text-sm text-gray-300">
           API Key

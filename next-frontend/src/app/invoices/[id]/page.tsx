@@ -3,13 +3,30 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Download } from "lucide-react";
 import Link from "next/link";
+import { cookies } from "next/headers";
 
-export default function InvoiceDetailsPage({
+export async function getInvoice(id: string) {
+  const cookiesStore = await cookies();
+  const apiKey = cookiesStore.get("apiKey")?.value;
+  const response = await fetch(`http://localhost:8081/invoice/${id}`, {
+    headers: {
+      "X-API-KEY": apiKey as string,
+    },
+    cache: 'force-cache',
+    next: {
+      tags: [`accounts/${apiKey}/invoices/${id}`]
+    }
+  });
+  return response.json();
+}
+
+export default async function InvoiceDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = params;
+  const { id } = await params;
+  const invoiceData = await getInvoice(id);
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -35,7 +52,7 @@ export default function InvoiceDetailsPage({
             </Badge>
           </div>
           <p className="text-gray-400">
-            Criada em {new Date().toLocaleDateString()}
+            Criada em {new Date(invoiceData.created_at).toLocaleDateString()}
           </p>
         </div>
 
@@ -55,31 +72,58 @@ export default function InvoiceDetailsPage({
           <div className="space-y-4">
             <div className="flex justify-between border-b border-gray-800 pb-2">
               <span className="text-gray-400">ID da Fatura</span>
-              <span className="text-white font-medium">{id}</span>
+              <span className="text-white font-medium">{invoiceData.id}</span>
             </div>
 
             <div className="flex justify-between border-b border-gray-800 pb-2">
               <span className="text-gray-400">Valor</span>
               <span className="text-white font-medium">
-                R$ 0,00
+                {invoiceData.amount}
               </span>
             </div>
 
             <div className="flex justify-between border-b border-gray-800 pb-2">
               <span className="text-gray-400">Data de Criação</span>
               <span className="text-white font-medium">
-                {new Date().toLocaleDateString()}
+                {new Date(invoiceData.created_at).toLocaleDateString()}
               </span>
             </div>
 
             <div className="flex justify-between pb-2">
               <span className="text-gray-400">Descrição</span>
               <span className="text-white font-medium">
-                Fatura de exemplo
+                {invoiceData.description}
               </span>
             </div>
           </div>
         </Card>
+
+        {/* Método de Pagamento */}
+        <Card className="bg-[#1e293b] border-gray-800 p-6">
+          <h2 className="text-xl font-semibold text-white mb-4">
+            Método de Pagamento
+          </h2>
+
+          <div className="space-y-4">
+            <div className="flex justify-between border-b border-gray-800 pb-2">
+              <span className="text-gray-400">Tipo</span>
+              <span className="text-white font-medium">
+                {invoiceData.payment_type === "credit_card"
+                  ? "Cartão de crédito"
+                  : "Boleto"}
+              </span>
+            </div>
+
+            <div className="flex justify-between border-b border-gray-800 pb-2">
+              <span className="text-gray-400">Últimos Dígitos</span>
+              <span className="text-white font-medium">
+                {invoiceData.card_last_digits}
+              </span>
+            </div>
+
+          </div>
+        </Card>
+
       </div>
     </div>
   );

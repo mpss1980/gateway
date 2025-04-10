@@ -4,10 +4,11 @@ import { CreditCard } from "lucide-react";
 import { Input } from "../../../components/ui/input";
 import { Textarea } from "../../../components/ui/textarea";
 import { Button } from "../../../components/ui/button";
+import { createInvoiceAction } from "./create-invoice-action";
 
 export function InvoiceForm() {
   return (
-    <form>
+    <form action={createInvoiceAction}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Informações da Fatura */}
         <div className="space-y-6">
@@ -87,7 +88,7 @@ export function InvoiceForm() {
                   id="cvv"
                   name="cvv"
                   placeholder="123"
-                  defaultValue={"123"}
+                    defaultValue={"123"}
                   className="bg-[#2a3749] border-gray-700 text-white placeholder-gray-400"
                 />
               </div>
@@ -100,8 +101,8 @@ export function InvoiceForm() {
               <Input
                 id="cardholderName"
                 name="cardholderName"
-                placeholder="Nome como está no cartão"
-                defaultValue={"John Doe"}
+                placeholder="Como aparece no cartão"
+                defaultValue={"Nome Sobrenome"}
                 className="bg-[#2a3749] border-gray-700 text-white placeholder-gray-400"
               />
             </div>
@@ -109,12 +110,46 @@ export function InvoiceForm() {
         </div>
       </div>
 
-      <div className="mt-8 flex justify-end">
+      {/* Resumo de Valores */}
+      {/* <div className="mt-8 border-t border-gray-800 pt-4">
+        <div className="flex justify-between py-2">
+          <span className="text-gray-300">Subtotal</span>
+          <span className="text-white">
+            R$ {value.toFixed(2).replace(".", ",")}
+          </span>
+        </div>
+
+        <div className="flex justify-between py-2 border-b border-gray-800">
+          <span className="text-gray-300">Taxa de Processamento (2%)</span>
+          <span className="text-white">
+            R$ {processingFee.toFixed(2).replace(".", ",")}
+          </span>
+        </div>
+
+        <div className="flex justify-between py-4">
+          <span className="text-xl font-semibold text-white">Total</span>
+          <span className="text-xl font-semibold text-white">
+            R$ {total.toFixed(2).replace(".", ",")}
+          </span>
+        </div>
+      </div> */}
+
+      {/* Botões de Ação */}
+      <div className="mt-6 flex justify-end gap-4">
+        <Button
+          type="button"
+          variant="outline"
+          className="bg-[#2a3749] border-gray-700"
+        >
+          Cancelar
+        </Button>
+
         <Button
           type="submit"
           className="bg-indigo-600 hover:bg-indigo-700 text-white"
         >
-          Criar Fatura
+          <CreditCard className="h-4 w-4 mr-2" />
+          Processar Pagamento
         </Button>
       </div>
     </form>
