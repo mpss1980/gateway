@@ -10,7 +10,8 @@ export async function getInvoice(id: string) {
   const apiKey = cookiesStore.get("apiKey")?.value;
   const response = await fetch(`http://localhost:8081/invoice/${id}`, {
     headers: {
-      "X-API-KEY": apiKey as string,
+      "Content-Type": "application/json",
+      "X-API_KEY": apiKey as string,
     },
     cache: 'force-cache',
     next: {

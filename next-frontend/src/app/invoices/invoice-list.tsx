@@ -9,16 +9,33 @@ import { cookies } from "next/headers";
 export async function getInvoices() {
   const cookiesStore = await cookies();
   const apiKey = cookiesStore.get("apiKey")?.value;
-  const response = await fetch("http://localhost:8081/invoice", {
-    headers: {
-      "X-API-KEY": apiKey as string,
-    },
-    cache: 'force-cache',
-    next: {
-      tags: [`accounts/${apiKey}/invoices`]
+  
+  if (!apiKey) {
+    throw new Error("API key not found");
+  }
+
+  try {
+    const response = await fetch("http://localhost:8081/invoices", {
+      headers: {
+        "Content-Type": "application/json",
+        "X-API_KEY": apiKey,
+      },
+      cache: 'force-cache',
+      next: {
+        tags: [`accounts/${apiKey}/invoices`]
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  });
-  return response.json();
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching invoices:', error);
+    throw error;
+  }
 }
 
 export async function InvoiceList() {

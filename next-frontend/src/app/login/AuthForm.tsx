@@ -1,4 +1,3 @@
-
 import { InfoIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert";
 import { Button } from "../../components/ui/button";
@@ -12,7 +11,8 @@ export async function loginAction(formData: FormData) {
 
   const response = await fetch("http://localhost:8081/accounts", {
     headers: {
-      "X-API-KEY": apiKey as string,
+      "Content-Type": "application/json",
+      "X-API_KEY": apiKey as string,
     },
   });
 

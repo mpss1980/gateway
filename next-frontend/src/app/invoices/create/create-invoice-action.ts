@@ -22,7 +22,7 @@ export async function createInvoiceAction(formData: FormData) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-API-Key": apiKey as string,
+      "X-API_KEY": apiKey as string,
     },
     body: JSON.stringify({
       amount: parseFloat(amount as string),
