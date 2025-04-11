@@ -6,6 +6,14 @@ import Link from "next/link";
 import { StatusBadge } from "@/components/StatusBadge";
 import { cookies } from "next/headers";
 
+interface Invoice {
+  id: string;
+  amount: number;
+  description: string;
+  status: "pending" | "approved" | "rejected";
+  created_at: string;
+}
+
 export async function getInvoices() {
   const cookiesStore = await cookies();
   const apiKey = cookiesStore.get("apiKey")?.value;
@@ -138,7 +146,7 @@ export async function InvoiceList() {
             </tr>
           </thead>
           <tbody>
-            {invoices.map((invoice) => (
+            {invoices.map((invoice: Invoice) => (
               <tr key={invoice.id} className="border-b border-gray-800">
                 <td className="py-4 px-4 text-white">{invoice.id}</td>
                 <td className="py-4 px-4 text-white">
